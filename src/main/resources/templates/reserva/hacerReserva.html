@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="plantilla/template :: head"> </head>
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/mostrarFacturas.css}">
+    <link rel="stylesheet" th:href="@{/css/crearReserva.css}">
+</head>
+
+<body>
+    <header th:replace="plantilla/template :: header"> </header>
+
+    <script>
+        $(document).ready(function() {
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar" class="hideSidebar" th:if="${session.usuario != null}">
+            <div class="sidebar-header">
+                <h3>easyTPV</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a th:href="@{/home}">Inicio</a>
+                </li>
+                <li>
+                    <a th:href="@{/servicios}">Servicios</a>
+                </li>
+                <li>
+                    <a th:href="@{/reservar/hacerReserva}">Crear reserva</a>
+                </li>
+                <li>
+                    <a th:href="@{/reserva/mostrarReservas}">Reservas</a>
+                </li>
+                <li>
+                    <a th:href="@{/factura/mostrarFacturas}">Facturas</a>
+                </li>
+                <li>
+                    <a th:href="@{/ventanaPago}">Ventana de Pago</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light hideSidebar" th:if="${session.usuario != null}">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class='bx bx-menu'></i>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="d-flex justify-content-center">
+
+                <div class="col-10">
+                    <h1 class="" th:text="${titulo}"></h1>
+
+
+                    <form class="form-group" th:action="@{/reservar/hacerReserva}" th:object="${reserva}" method="post">
+
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="col-form-label">Teléfono:</label>
+                            <input th:field="*{numeroCliente}" type="text" class="form-control" id="telefono" placeholder="698754321" required pattern="[0-9]{9}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Nombre:</label>
+                            <input th:field="*{nombreCliente}" type="text" class="form-control" id="nombre" placeholder="Federico Matute" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputMDEx">Fecha:</label>
+                            <input th:field="*{fecha}" type="date" id="inputMDEx" class="form-control" required min='' onchange="horasDia(this.value)">
+                            <script>
+                                var today = new Date();
+                                var dd = today.getDate();
+                                var mm = today.getMonth() + 1; //January is 0!
+                                var yyyy = today.getFullYear();
+
+                                if (dd < 10) {
+                                    dd = '0' + dd;
+                                }
+
+                                if (mm < 10) {
+                                    mm = '0' + mm;
+                                }
+
+                                today = yyyy + '-' + mm + '-' + dd;
+                                document.getElementById("inputMDEx").setAttribute("min", today);
+                            </script>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="">Seleccione Hora:</label>
+                            <select id="prueba" class="form-select" aria-label="Default select example" th:field=*{hora} required>
+                                <option id="horasSelect" th:each="res : ${horasDia}" th:text="${res}" th:value="${res}">
+                                </option>
+                                <script th:inline="javascript">
+                                    function horasDia(dia) {
+                                        let lista = /*[[${horasDia}]]*/[];
+                                        let listaReserva = /*[[${listaReservas}]]*/[];
+                                        let listaBuenaReserva = [];
+                                        let listaBuenaHoras = [];
+
+                                        //Coger reservas del día
+                                        let tamano = listaReserva.length;
+                                        for (let i = 0; i < tamano; i++) {
+                                            if (listaReserva[i].fecha == dia) {
+                                                listaBuenaReserva.push(listaReserva[i]);
+                                            }
+                                        }
+
+                                        let horasSize = lista.length;
+                                        for (let j = 0; j < horasSize; j++) {
+                                            for (let k = 0; k < listaBuenaReserva.length; k++) {
+                                                let reserva = listaBuenaReserva[k];
+                                                if (reserva.hora == (lista[j])) { lista.splice(j, 1); break; }
+                                            }
+                                        }
+
+                                        //Rayada
+                                        let today = new Date();
+                                        let hoy;
+                                        var dd = today.getDate();
+                                        var m = today.getMonth() + 1; //January is 0!
+                                        var yyyy = today.getFullYear();
+
+                                        if (dd < 10) {
+                                            dd = '0' + dd;
+                                        }
+
+                                        if (m < 10) {
+                                            m = '0' + m;
+                                        }
+
+                                        hoy = yyyy + '-' + m + '-' + dd;
+
+                                        let hh = today.getHours();
+                                        let lista2 = [];
+
+                                        console.log(parseInt(lista[0].substring(0, 2)) < hh);
+                                        if (dia == hoy) {
+                                            let o = lista.length;
+                                            for (let x = 0; x < o; x++) {
+                                                if (parseInt(lista[x].substring(0, 2)) > hh) {
+                                                    lista2.push(lista[x]);
+                                                }
+                                            }
+                                            lista = lista2;
+                                        }
+
+                                        //Fin Rayada
+
+                                        document.getElementById("prueba").innerHTML = "";
+                                        for (let s = 0; s < lista.length; s++) {
+                                            let option = document.createElement("option");
+                                            option.text = lista[s];
+                                            option.value = lista[s];
+                                            document.getElementById("prueba").add(option);
+                                        }
+                                    }
+                                </script>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="">Seleccione Servicio:</label>
+                            <select th:id="selectServicios" class="form-select" aria-label="Default select example" th:field=*{servicio} th:onchange="javascript:cambiarFoto([[${servicios}]])">
+                                <option th:each="serv : ${servicios}" th:text="${serv.nombre}" th:value="${serv.id}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div id="carouselExampleCaptions" class="carousel slide mb-3 border border-2" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                <button th:id="${servicio.id}" th:each="servicio:${servicios}" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="" class="" aria-current="" aria-label="${servicio.nombre}"></button>
+                                <script th:inline="javascript">
+                                    let lista = /*[[${servicios}]]*/ [];
+                                    for (var i = 0; i < lista.length; i++) {
+                                        document.getElementById(lista[i].id).setAttribute("data-bs-slide-to", i);
+                                    }
+                                    document.getElementById(lista[0].id).setAttribute("class", "active");
+                                    document.getElementById(lista[0].id).setAttribute("aria-current", "true");
+                                </script>
+                                <script th:inline="javascript">
+                                    function cambiarFoto(servicios) {
+                                        for (var i = 0; i < servicios.length; i++) {
+                                            if (document.getElementById("selectServicios").value == servicios[i].id) {
+                                                document.getElementById(servicios[i].id).click();
+                                            }
+                                        }
+                                    }
+                                </script>
+                            </div>
+                            <div class="carousel-inner">
+                                <div th:id="${servicio.nombre}" class="carousel-item" th:each="servicio:${servicios}">
+                                    <img th:src="${servicio.imagen}" class="d-block w-100" height="300px" width="100%" style="object-fit: cover;">
+                                    <div class="carousel-caption d-none d-md-block">
+                                        <h5 th:text="${servicio.nombre}" style="background-color:black"></h5>
+                                        <!-- <p>Some representative placeholder content for the first slide.</p> -->
+                                    </div>
+                                </div>
+                                <script>
+                                    document.getElementById("Corte caballero con lavado").setAttribute("class", "carousel-item active");
+                                </script>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="check" required>
+                                <!-- <span>Aceptar términos y condiciones</span> -->
+                                <a id="term" th:href="@{/reservar/terminos}">Aceptar términos y condiciones</a>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-5" id="reservar">Reservar</button>
+
+                    </form>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

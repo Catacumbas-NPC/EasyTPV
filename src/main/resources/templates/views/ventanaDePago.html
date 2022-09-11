@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="plantilla/template :: head"> </head>
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/mostrarFacturas.css}">
+</head>
+
+<body>
+    <header th:replace="plantilla/template :: header"></header>
+    <script>
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>easyTPV</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a th:href="@{/home}">Inicio</a>
+                </li>
+                <li>
+                    <a th:href="@{/servicios}">Servicios</a>
+                </li>
+                <li>
+                    <a th:href="@{/reservar/hacerReserva}">Crear reserva</a>
+                </li>
+                <li>
+                    <a th:href="@{/reserva/mostrarReservas}">Reservas</a>
+                </li>
+                <li>
+                    <a th:href="@{/factura/mostrarFacturas}">Facturas</a>
+                </li>
+                <li>
+                    <a th:href="@{/ventanaPago}">Ventana de Pago</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class='bx bx-menu'></i>
+                    </button>
+                </div>
+            </nav>
+
+            <script th:inline="javascript">
+                function mostrarOcultar() {
+                    /* if */
+                    console.log();
+                }
+
+                function buttonMinus(btn) {
+                    document.getElementById(btn).style.display = 'none';
+                    var btnMinus = btn.substr(4);
+                    document.getElementById("plus" + btnMinus).style.display = 'inline';
+                    document.getElementById(btnMinus).style.display = 'none';
+                }
+
+                function buttonPlus(btn) {
+                    document.getElementById(btn).style.display = 'none';
+                    var btnMinus = btn.substr(4);
+                    document.getElementById("minu" + btnMinus).style.display = 'inline';
+                    document.getElementById(btnMinus).style.display = 'inline';
+                }
+
+                function precio(servicios, serviciosFacturados, factura) {
+
+                    var suma = 0;
+                    var listaServicios = [];
+                    factura.servicios = "";
+                    var serv = "";
+                    for (var i = 0; i < servicios.length; i++) {
+                        if (document.getElementById(servicios[i].nombre).style.display == "inline") {
+                            var cant = document.getElementById("cant" + servicios[i].nombre).value;
+                            var precio = servicios[i].precio;
+                            suma += parseInt(cant) * parseInt(precio)
+                            listaServicios.push(servicios[i]);
+                            factura.servicios += servicios[i].nombre + ",";
+                            serv += servicios[i].nombre + ",";
+                        }
+                    }
+                    serviciosFacturados = listaServicios;
+                    factura.total = suma
+
+                    console.log(suma);
+                    console.log(serv);
+                    document.getElementById("idServicios").setAttribute("value", serv);
+                    document.getElementById("idTotal").setAttribute("value", suma);
+                    document.getElementById("pagar").submit();
+                }
+            </script>
+
+            <div class="d-flex justify-content-center">
+                <h1>Ventana de Pago</h1>
+            </div>
+
+            <div class="row justify-content-center mt-5">
+                <div class="col-10 ">
+                    <div class="row">
+                        <div th:each="servicio:${servicios}" class="mb-4 col-lg-6 col-md-12 col-sm-12 col-12 row align-items-center">
+                            <label class="col-7" th:text="${servicio.nombre}"></label>
+                            <label class="col-2" th:text="${servicio.precio} + ' €'"></label>
+                            <button class="btn btn-danger col-2" th:id="'minu' + ${servicio.nombre}"
+                                th:with="id1=${servicio.nombre}"
+                                th:onclick="javascript:buttonMinus([['minu' + ${id1}]]);" style="display: none;"><i
+                                    class='bx bx-minus'></i></button>
+                            <button class="btn btn-success col-2" th:id="'plus' + ${servicio.nombre}"
+                                th:with="id2=${servicio.nombre}"
+                                th:onclick="javascript:buttonPlus([['plus' + ${id2}]]);"><i
+                                    class='bx bx-plus'></i></button>
+                        </div>
+                    </div>
+
+                    <div class="line"></div>
+
+                    <form th:id="pagar" th:action="@{/ventanaPago}" th:object="${factura}" method="post">
+                        <div class="">
+                            <label for="">Seleccione Método de Pago</label>
+                            <select id="prueba" class="form-select" aria-label="Default select example"
+                                th:field=*{metodoPago}>
+                                <option id="horasSelect" th:value="0">En efectivo</option>
+                                <option id="horasSelect" th:value="1">Con tarjeta</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="">Seleccione Reserva</label>
+                            <select id="selectReservas" class="form-select" aria-label="Default select example"
+                                th:field=*{reserva} required>
+                                <span th:each="reserva:${reservasHoy}">
+                                    <script th:inline="javascript">
+                                        document.getElementById("selectReservas").innerHTML = "";
+                                        var lista = /*[[${reservasHoy}]]*/[];
+                                        var facturasTodas = /*[[${facturasTodas}]]*/[];
+                                        console.log(lista);
+                                        console.log(facturasTodas);
+                                        var noHay = true;
+                                        for (var i = 0; i < lista.length; i++) {
+                                            for (var j = 0; j < facturasTodas.length; j++) {
+                                                if (lista[i].id != facturasTodas[j].reserva.id) { }
+                                                else { noHay = false; break; }
+                                            }
+                                            if (noHay) {
+                                                let option = document.createElement("option");
+                                                option.text = lista[i].nombreCliente;
+                                                option.value = lista[i].id;
+                                                document.getElementById("selectReservas").add(option);
+                                            }
+                                        }
+                                    </script>
+                                </span>
+                            </select>
+                        </div>
+
+                        <div class="form-group row" th:each="servicio:${servicios}" th:id="${servicio.nombre}"
+                            style="display: none;">
+                            <label class="col-form-label" th:text="${servicio.nombre}"></label>
+                            <input th:id="'cant'+${servicio.nombre}" type="number" required min="1" value="1">
+                        </div>
+                        <div class="mt-4 flex-row-reverse">
+                            <!-- <a th:onclick="javascript:precio([[${servicios}]]);" type="submit" class="btn btn-primary" th:href="@{/ventanaPago/factura}">Pagar</a> -->
+                            <button id="buscar" th:onclick="javascript:precio([[${servicios}]],[[${serviciosFacturados}]],[[${factura}]]);"
+                                type="submit" class="btn btn-primary">Pagar</button>
+                        </div>
+                        <input th:field="*{total}" th:id="idTotal" type="number" style="display: none;" value="">
+                        <input th:field="*{servicios}" th:id="idServicios" type="text" style="display: none;" value="">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

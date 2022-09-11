@@ -1,0 +1,57 @@
+/* .container-tarjeta {
+  padding-left: 5em;
+  padding-right: 5em;
+} */
+
+.container {
+  border-color: #ac875b;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  padding: 5em 0em 5em 0em;
+  border-radius: 20px;
+}
+/* .borde-superior {
+  border-color: #ac875b;
+  border-style: solid;
+  padding-bottom: 0em;
+  border-width: 1px 0px 0px 0px;
+  border-radius: 20px 0px 0px 0px;
+  width: 40%;
+} */
+/* .borde-inferior {
+  border-color: #ac875b;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  padding-bottom: 10em;
+  border-radius: 0px 0px 0px 20px;
+  width: 50%;
+} */
+
+th {
+  font-weight: bold;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+/* h1 {
+  font-family: -apple-system-ui-serif, ui-serif;
+  color: #804500;
+} */
+
+tr {
+  text-align: center;
+}
+
+.boton-confirmar {
+  border-radius: 20px;
+  text-align: center;
+  color: #fff;
+  height: 1.7em;
+  width: 6em;
+  background-color: #b28e65;
+}
+.boton-confirmar:hover {
+  background-color: #b28e65;
+  opacity: 0.8;
+  color: #fff;
+}

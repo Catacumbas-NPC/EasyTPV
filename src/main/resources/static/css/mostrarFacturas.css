@@ -1,0 +1,53 @@
+#facturas {
+  border-radius: 2rem;
+  border-color: #b28e65;
+}
+
+.modalCrear {
+  border-radius: 2rem;
+  border-color: #b28e65;
+}
+
+h1 {
+    color: #b28e65;
+}
+
+#buscar {
+  background-color: #b28e65;
+  border: none;
+  color: #ffffff;
+}
+
+#reservar {
+  background-color: #b28e65;
+  border: none;
+}
+
+#crearServicio {
+  background-color: #b28e65;
+  border: none;
+}
+
+h4 {
+  color: #b28e65;
+}
+
+#sidebar {
+  background-color: #b28e65;
+}
+
+#sidebar ul {
+  border: none !important;
+}
+
+.sidebar-header {
+  background-color: #ad8454 !important;
+}
+
+#newService {
+  border: none;
+  background: none;
+}
+#textBAnyadir {
+  color: #b28e65;
+}

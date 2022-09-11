@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="plantilla/template :: head"> </head>
+
+<head><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/css/mostrarFacturas.css}">
+</head>
+
+<body>
+    <header th:replace="plantilla/template :: header"> </header>
+
+    <script>
+        $(document).ready(function() {
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>easyTPV</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a th:href="@{/home}">Inicio</a>
+                </li>
+                <li>
+                    <a th:href="@{/servicios}">Servicios</a>
+                </li>
+                <li>
+                    <a th:href="@{/reservar/hacerReserva}">Crear reserva</a>
+                </li>
+                <li>
+                    <a th:href="@{/reserva/mostrarReservas}">Reservas</a>
+                </li>
+                <li>
+                    <a th:href="@{/factura/mostrarFacturas}">Facturas</a>
+                </li>
+                <li>
+                    <a th:href="@{/ventanaPago}">Ventana de Pago</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="content" th:object="${factura}">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                    <i class='bx bx-menu'></i>
+                </button>
+                </div>
+            </nav>
+            <div class="pepito" id="aimprimir">
+                <h1>Factura</h1>
+                <br><br>
+                <h6 th:text="'Fecha Reserva ' + *{reserva.fecha}"></h6>
+                <div class="card me-4 mb-5">
+                    <h5 class="card-header">Cabecera</h5>
+
+                    <div class="card-body">
+                        <div style="display:flex; justify-content: space-evenly;">
+                            <div style="width:25rem">
+                                <dt>Reserva a nombre de:</dt>
+                                <dd th:text="*{reserva.nombreCliente}"></dd>
+                            </div>
+                            <div style="width:25rem">
+                                <dt>Metodo de pago</dt>
+                                <dd th:if="*{!metodoPago}">En efectivo</dd>
+                                <dd th:if="*{metodoPago}">Con tarjeta</dd>
+                            </div>
+                            <div style="width:25rem">
+                                <dt text-align: rigth;>Resumen de la reserva</dt>
+                                <dt text-align: rigth;>Servicio:</dt>
+                                <dd text-align: rigth; th:text="*{servicios}"></dd>
+                                <dt text-align: rigth;>Total:</dt>
+                                <dd text-align: rigth; th:text="*{total} + ' euros'"></dd>
+                            </div>
+                        </div>
+                        
+                        <!-- <a class="btn btn-info">Descargar factura</a> -->
+                    </div>
+                </div>
+            </div>
+            <button id="buscar" class="btn btn-info" th:onclick="javascript:pdf([[${factura}]]);">Descargar factura</button>
+        </div>
+</body>
+<script>
+    function pdf(factura) {
+        var source = window.document.getElementsByTagName("aimprimir")[0];
+        var doc = new jsPDF();
+        doc.fromHTML(document.body.getElementsByClassName("pepito")[0]);
+        doc.save('Factura-' + factura.id + '-' + factura.fechaDeExpedicion.toString().substring(0, 10) + '.pdf');
+    }
+</script>
+
+</html>

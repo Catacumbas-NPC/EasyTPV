@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="plantilla/template :: head"> </head>
+
+<head>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/mostrarFacturas.css}">
+</head>
+
+<body>
+    <header th:replace="plantilla/template :: header"> </header>
+
+    <script>
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
+    <script>
+    </script>
+
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>easyTPV</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a th:href="@{/home}">Inicio</a>
+                </li>
+                <li>
+                    <a th:href="@{/servicios}">Servicios</a>
+                </li>
+                <li>
+                    <a th:href="@{/reservar/hacerReserva}">Crear reserva</a>
+                </li>
+                <li>
+                    <a th:href="@{/reserva/mostrarReservas}">Reservas</a>
+                </li>
+                <li>
+                    <a th:href="@{/factura/mostrarFacturas}">Facturas</a>
+                </li>
+                <li>
+                    <a th:href="@{/ventanaPago}">Ventana de Pago</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class='bx bx-menu'></i>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="d-flex justify-content-center">
+                <h1>Lista de Servicios</h1>
+            </div>
+            <br><br>
+
+            <div class="d-flex justify-content-start container">
+                <button id="newService" data-toggle="modal" data-target="#exampleModalCenter" aria-hidden="true">
+                    <!-- <i class='bx bx-plus-circle'></i> -->
+                    <img src="images/plus-circle-regular-60.png" alt="">
+                    <span class="" id="textBAnyadir"> Añadir Servicio</span>
+                </button>
+            </div>
+
+
+            <!-- <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="card me-4 mb-5" style="width: 18rem; display: inline-block;" th:each="servicio:${servicios}">
+                    <img th:src="${servicio.imagen}" class="img-fluid card-img-top"/>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${servicio.nombre}"></h5>
+                        <div class="d-flex card-text">
+                            <p th:text="${servicio.precio}"></p>
+                            <p> €</p>
+                        </div>
+                    </div>
+                    <button data-toggle="modal" th:data-target="'#modalEditar' + ${servicio.id}" class="btn btn-secondary"
+                        aria-hidden="true">Editar</button>
+                    <a class="btn btn-danger" type="submit" th:href="@{/eliminar_servicio/} + ${servicio.id}" onclick="return confirm('¿Estás seguro de que quiere eliminar el servicio?')">Eliminar</a> -->
+            <!-- <a href="#" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quiere eliminar la reserva?')">Eliminar</a> -->
+            <!-- Modal Editar -->
+            <div class="modal fade" th:id="'modalEditar' + ${servicio.id}" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true" th:each="servicio:${servicios}">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content modalCrear">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Editar Servicio</h5>
+                            <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{/editar_servicio}" th:object="${servicio}" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+
+                                <div class="mb-3 mt-3">
+                                    <label style="width:30%">Nombre</label>
+                                    <input type="text" th:value="${servicio.nombre}" required>
+                                    <input type="text" th:field="*{nombre}" hidden>
+                                </div>
+                                <div class="mb-3 mt-3" hidden>
+                                    <label style="width:30%">ID</label>
+                                    <input type="text" th:value="${servicio.id}" required>
+                                    <input type="text" th:field="*{id}" hidden>
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <label style="width:30%">Precio</label>
+                                    <input type="number" th:value="${servicio.precio}" min="0" required>
+                                    <input type="number" th:field="*{precio}" min="0" hidden>
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <label class="mb-3">Imagen</label>
+                                    <input class="form-control" type="file" name="formFileMultiple"
+                                        onchange="limpiar(this)">
+                                    <label th:text="${servicio.imagen}"> </label>
+                                </div>
+                                <script th:inline="javascript">
+                                    function copiar(input) {
+                                        let form = input.parentElement.parentElement;
+                                        let body = form.getElementsByClassName("modal-body")[0];
+                                        let campos = body.getElementsByTagName("input");
+                                        campos[1].value = campos[0].value;
+                                        campos[3].value = campos[2].value;
+                                        campos[5].value = campos[4].value;
+                                        form.submit();
+                                    }
+                                    function limpiar(input) {
+                                        input.parentElement.getElementsByTagName("label")[1].textContent = "";
+                                    }
+                                </script>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                <button onclick="copiar(this)" class="btn btn-primary" id="crearServicio">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- <div class="card shadow-sm">
+
+            </div> -->
+
+            <!-- Button trigger modal -->
+            <!-- <button id="newService" data-toggle="modal" data-target="#exampleModalCenter" aria-hidden="true">
+                <i class='bx bx-plus-circle'></i>
+            </button> -->
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content modalCrear">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Crear Servicio</h5>
+                            <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{/añadir_servicio}" th:object="${servicio}" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+
+                                <div class="mb-3 mt-3">
+                                    <label style="width:30%">Nombre</label>
+                                    <input type="text" th:field="*{nombre}" required>
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <label style="width:30%">Precio</label>
+                                    <input type="number" th:field="*{precio}" min="0" required>
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <label class="mb-3">Imagen</label>
+                                    <input class="form-control" type="file" name="formFileMultiple" required>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-primary" id="crearServicio">Crear</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container mt-5">
+                <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-start">
+                    <div class="card col-4 me-4 align-content-between" style="width: 22rem;"
+                        th:each="servicio:${servicios}" id="facturas">
+                        <div id="card-servicios" class="card-body col">
+                            <div style="height:15rem" class="row align-items-between">
+                                <h4 class="card-subtitle mb-2 text-muted" th:text="${servicio.nombre}"></h4>
+                                <h5 class="card-title" th:text="${servicio.precio}+'€'"></h5>
+                                <div>
+                                    <button data-toggle="modal" th:data-target="'#modalEditar' + ${servicio.id}"
+                                        class="btn btn-secondary" aria-hidden="true">Editar</button>
+                                    <a class="btn btn-danger" type="submit"
+                                        th:href="@{/eliminar_servicio/} + ${servicio.id}"
+                                        onclick="return confirm('¿Estás seguro de que quiere eliminar el servicio?')">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+</body>
+
+</html>

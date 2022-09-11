@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="plantilla/template :: head"> </head>
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    <link rel="stylesheet" th:href="@{/css/mostrarFacturas.css}">
+</head>
+
+<body>
+    <header th:replace="plantilla/template :: header"> </header>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+
+    </script>
+
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>easyTPV</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a th:href="@{/home}">Inicio</a>
+                </li>
+                <li>
+                    <a th:href="@{/servicios}">Servicios</a>
+                </li>
+                <li th:if="${session.usuario != null}">
+                    <a th:href="@{/reservar/hacerReserva}">Crear reserva</a>
+                </li>
+                <li>
+                    <a th:href="@{/reserva/mostrarReservas}">Reservas</a>
+                </li>
+                <li>
+                    <a href="#">Facturas</a>
+                </li>
+                <li>
+                    <a th:href="@{/ventanaPago}">Ventana de Pago</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class='bx bx-menu'></i>
+                    </button>
+                </div>
+            </nav>
+            <div class="modal-dialog text-center">
+                <div class="col-sm-12 main-section">
+                    <div class="modal-content mb-5">
+                        <div class="col-12 img-user">
+                            <img th:src="@{/images/avatar-icon.png}" />
+                        </div>
+                        <div class="text-white mb-3 fs-4 fw-light" th:text="${titulo}"></div>
+                        <form th:action="@{/registro}" th:object="${persona}" method="post" class="row g-3">
+                            <div class="mb-3">
+                                <input type="hidden" th:field="*{id}"> <input th:field="*{nombre}" class="form-control"
+                                    type="text" placeholder="Nombre" /> <small class="form-text text-danger"
+                                    th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <input th:field="*{dni}" class="form-control" type="text" placeholder="DNI" /> <small
+                                    class="form-text text-danger" th:if="${#fields.hasErrors('dni')}"
+                                    th:errors="*{dni}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <input th:field="*{usuario}" class="form-control" type="text" placeholder="Usuario" />
+                                <small class="form-text text-danger" th:if="${#fields.hasErrors('usuario')}"
+                                    th:errors="*{usuario}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <input th:field="*{contrasenya}" class="form-control" type="text"
+                                    placeholder="Contraseña" /> <small class="form-text text-danger"
+                                    th:if="${#fields.hasErrors('contrasenya')}" th:errors="*{contrasenya}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <input th:field="*{confirmContrasenya}" class="form-control" type="password"
+                                    placeholder="Confirmar Contraseña" /> <small class="form-text text-danger"
+                                    th:if="${#fields.hasErrors('contrasenya')}" th:errors="*{contrasenya}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <input type="hidden" th:field="*{empresa}" />
+                            </div>
+
+
+                            <button class="btn btn-primary mb-3" type="submit">
+                                <i class="fas fa-sign-in-alt"></i> SIGN IN
+                            </button>
+
+                            <div th:if="${registroErrorMessage}" class="alert alert-danger alert-dismissible fade show"
+                                role="alert">
+                                <strong th:text="${registroErrorMessage}"></strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
